@@ -28,7 +28,7 @@ Participants can win multiple prizes. Ties are broken by: how far the team progr
 
 ## Updating the teams
 
-The default groups are based on projected 2026 seedings. Once the official draw is announced, update the `const GROUPS` block near the top of `index.html`:
+The default groups are based on odds of winning group as of 08/05/2026, to update these go to `index.html`:
 
 ```js
 const GROUPS = {
