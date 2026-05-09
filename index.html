@@ -257,6 +257,26 @@ details[open] summary { margin-bottom: 10px; }
   .mode-grid { grid-template-columns: repeat(2, 1fr); }
   .result-grid, .result-grid.compact { grid-template-columns: 1fr; }
 }
+
+/* Timestamp */
+.draw-timestamp {
+  font-size: 12px;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+
+@media print {
+  body { background: #fff; padding: 1rem; }
+  .no-print { display: none !important; }
+  .results { display: block !important; }
+  .result-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .result-grid.compact { grid-template-columns: repeat(4, 1fr); }
+  .result-card { border: 1px solid #ccc; break-inside: avoid; }
+  .info-bar { background: #f5f5f5; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rank-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-header { display: block !important; }
+  .note { display: none; }
+}
 </style>
 </head>
 <body>
@@ -267,7 +287,7 @@ details[open] summary { margin-bottom: 10px; }
   </header>
 
   <!-- Mode selector -->
-  <div class="card">
+  <div class="card no-print">
     <div class="section-label">Number of participants</div>
     <div class="mode-grid">
       <button class="mode-btn" onclick="setMode(6)" id="mode6">
@@ -291,25 +311,25 @@ details[open] summary { margin-bottom: 10px; }
   </div>
 
   <!-- Name inputs -->
-  <div class="card">
+  <div class="card no-print">
     <div class="section-label">Participant names</div>
     <div class="name-grid" id="nameGrid"></div>
     <div class="error" id="errorMsg"></div>
   </div>
 
   <!-- Rankings editor -->
-  <div class="card">
+  <div class="card no-print">
     <details>
-      <summary>▸ Edit team rankings per group (click to expand)</summary>
+      <summary>&#9656; Edit team rankings per group (click to expand)</summary>
       <p style="font-size:13px;color:var(--text2);margin-bottom:10px;">Update once the official 2026 World Cup draw is announced.</p>
       <div class="rank-editor-grid" id="rankingEditor"></div>
     </details>
   </div>
 
   <!-- Prize rules -->
-  <div class="card">
+  <div class="card no-print">
     <details>
-      <summary>▸ Prize rules (click to expand)</summary>
+      <summary>&#9656; Prize rules (click to expand)</summary>
 
       <div class="prizes" style="margin-top:10px;">
         <div class="prize-card p1">
@@ -343,12 +363,17 @@ details[open] summary { margin-bottom: 10px; }
     </details>
   </div>
 
-  <div class="btn-row">
+  <div class="btn-row no-print">
     <button class="primary" onclick="doDraw()">🎲 Do the draw</button>
     <button onclick="resetDraw()">Reset results</button>
+    <button id="printBtn" onclick="window.print()" style="display:none;">🖨️ Print / Save as PDF</button>
   </div>
 
   <div class="results" id="results">
+    <div class="print-header" style="display:none; margin-bottom:1rem;">
+      <h2 style="font-size:18px;font-weight:600;">&#9917; World Cup 2026 Sweepstake &#8212; Draw Results</h2>
+    </div>
+    <div class="draw-timestamp" id="drawTimestamp"></div>
     <div class="info-bar" id="infoBar"></div>
     <div class="result-grid" id="resultGrid"></div>
     <p class="note">Re-click "Do the draw" for a different random arrangement.</p>
@@ -561,11 +586,22 @@ function renderResults(names, assignments, info) {
   });
 
   document.getElementById('infoBar').innerHTML = `<strong>${currentMode} participants</strong> · ${info}`;
+
+  // Timestamp
+  const now = new Date();
+  const ts = now.toLocaleDateString('en-GB', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+    + ' at ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  document.getElementById('drawTimestamp').textContent = `Draw conducted: ${ts}`;
+
+  // Show print button
+  document.getElementById('printBtn').style.display = 'inline-block';
+
   document.getElementById('results').classList.add('show');
 }
 
 function resetDraw() {
   document.getElementById('results').classList.remove('show');
+  document.getElementById('printBtn').style.display = 'none';
   const err = document.getElementById('errorMsg');
   if (err) err.textContent = '';
 }
